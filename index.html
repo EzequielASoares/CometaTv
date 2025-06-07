@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Painel do Laboratório</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #f2f2f2;
+      font-family: 'Segoe UI', sans-serif;
+      color: #004775;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 5px;
+      height: 100vh;
+      padding: 5px;
+      box-sizing: border-box;
+    }
+    .box {
+      border-radius: 10px;
+      background-color: #3d3d3d;
+      padding: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      font-size: 14px;
+      color: #ffffff;
+    }
+    h2 {
+      font-size: 16px;
+      margin: 0 0 10px;
+      color: #ffffff;
+    }
+    iframe {
+      width: 100%;
+      border: none;
+    }
+    ul {
+      padding-left: 16px;
+      margin: 0;
+      font-size: 28px; /* Aumentado */
+    }
+    .rss-box {
+      overflow-y: auto;
+      flex: 1;
+    }
+    .rss-box iframe {
+      height: 100%;
+    }
+    .map-container {
+      position: relative;
+      flex: 1;
+    }
+    .map-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .video-loop {
+      flex: 1;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid">
+    <!-- Grid 1: Notícias -->
+    <div class="box">
+      <h2>Notícias de Astronomia</h2>
+      <div class="rss-box">
+        <iframe src="https://www.universetoday.com/" title="Universe Today"></iframe>
+      </div>
+    </div>
+
+    <!-- Grid 2: Vídeo YouTube em loop -->
+    <div class="box">
+      <h2>Vídeo do Projeto</h2>
+      <div class="video-loop">
+        <iframe 
+          width="100%" 
+          height="100%" 
+          src="https://www.youtube.com/embed/EpRd97OST0s?playlist=EpRd97OST0s&loop=1&autoplay=1&mute=1&controls=0" 
+          title="Vídeo do Projeto" 
+          frameborder="0" 
+          allow="autoplay; encrypted-media" 
+          allowfullscreen>
+        </iframe>
+      </div>
+    </div>
+
+    <!-- Grid 3: Vídeo de horários por dia útil -->
+    <div class="box">
+      <h2>Horário dos Participantes</h2>
+      <video id="videoHorario" autoplay muted loop></video>
+    </div>
+
+    <!-- Grid 4: Lista de tarefas -->
+    <div class="box">
+      <h2>Tarefas do Laboratório</h2>
+      <ul>
+        <li>WORKSHOP ✅</li>
+        <li>SAB RESUMOS 10/06</li>
+        <li>Encontro de Física Norte Nordeste 26-28/11</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Chart.js Curva de Luz substituída pelo vídeo de horários -->
+
+  <!-- Script para vídeo por dia útil -->
+  <script>
+    const video = document.getElementById('videoHorario');
+    const diasUteis = ["Seg", "Ter", "Qua", "Qui", "Sex"];
+    const dia = new Date().getDay(); // 0 = dom, ..., 6 = sáb
+
+    if (dia >= 1 && dia <= 5) {
+      const nomeDia = diasUteis[dia - 1]; // 1 = seg -> index 0
+      video.src = `videos/Horario${nomeDia}.mp4`;
+    } else {
+      video.src = `videos/HorarioSeg.mp4`;
+    }
+  </script>
+</body>
+</html>
