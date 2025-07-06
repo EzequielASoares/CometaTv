@@ -29,11 +29,13 @@
       flex-direction: column;
       font-size: 14px;
       color: #ffffff;
+      position: relative; /* Adicionado para posicionar as setas do carrossel */
     }
     h2 {
       font-size: 16px;
       margin: 0 0 10px;
       color: #ffffff;
+      z-index: 10; /* Garante que o título fique sobre a imagem */
     }
     iframe {
       width: 100%;
@@ -42,7 +44,7 @@
     ul {
       padding-left: 16px;
       margin: 0;
-      font-size: 28px; /* Aumentado */
+      font-size: 28px;
     }
     .rss-box {
       overflow-y: auto;
@@ -51,25 +53,39 @@
     .rss-box iframe {
       height: 100%;
     }
-    .map-container {
-      position: relative;
-      flex: 1;
-    }
-    .map-container iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-    .video-loop {
-      flex: 1;
-    }
     video {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
+
+    /* --- ESTILOS DO CARROSSEL --- */
+    .carousel-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%; /* Já está */
+      min-height: 250px; /* Adicione isso para forçar espaço mínimo */
+      overflow: hidden;
+      border-radius: 10px;
+    }
+
+    .carousel-slide {
+      display: none;
+      width: 100%;
+      height: 100%;
+    }
+    .carousel-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    /* Setas de navegação - REMOVIDAS */
+    .prev, .next {
+      display: none; /* Oculta os botões de navegação */
+    }
+
   </style>
 </head>
 <body>
@@ -82,14 +98,64 @@
     </div>
 
     <div class="box">
-      <h2>Vídeo do Projeto</h2>
-      <div class="video-loop">
-        <video id="videoProjeto" width="100%" height="100%" autoplay muted loop playsinline>
-          <source src="videos/cometa.mp4" type="video/mp4">
-          Seu navegador não suporta a tag de vídeo.
-        </video>
+      <h2>Imagens do Projeto</h2>
+      <div class="carousel-container" style="display: block;">
+        <div class="carousel-slide">
+          <img src="https://i.imgur.com/H1VDjrL.png" alt="Imagem 1">
+        </div>
+        <div class="carousel-slide">
+          <img src="https://i.imgur.com/OtYwGT8.png" alt="Imagem 2">
+        </div>
+        <div class="carousel-slide">
+          <img src="https://i.imgur.com/0IKJEv1.png" alt="Imagem 3">
+        </div>
+        <div class="carousel-slide">
+          <img src="https://i.imgur.com/jlA2uvU.png" alt="Imagem 4">
+        </div>
+        <div class="carousel-slide">
+          <img src="https://i.imgur.com/jsACFuk.png" alt="Imagem 5">
+        </div>
+        <div class="carousel-slide">
+          <img src="https://i.imgur.com/ZpjOTrs.png" alt="Imagem 6">
+        </div>
+        <div class="carousel-slide">
+          <img src="https://i.imgur.com/wr50ViL.png" alt="Imagem 7">
+        </div>
+        <div class="carousel-slide">
+          <img src="https://i.imgur.com/xuUpGzP.png" alt="Imagem 8">
+        </div>
+        <div class="carousel-slide">
+          <img src="https://i.imgur.com/FfRmpSy.png" alt="Imagem 9">
+        </div>
+        <div class="carousel-slide">
+          <img src="https://i.imgur.com/xgYNzTI.png" alt="Imagem 10">
+        </div>
+        <div class="carousel-slide">
+          <img src="https://i.imgur.com/dvln20A.png" alt="Imagem 11">
+        </div>
+        <div class="carousel-slide">
+          <img src="https://i.imgur.com/QlUrRPJ.png" alt="Imagem 12">
+        </div>
+        <div class="carousel-slide">
+          <img src="https://i.imgur.com/JobkDQR.png" alt="Imagem 13">
+        </div>
+        <div class="carousel-slide">
+          <img src="https://i.imgur.com/W3llLqs.png" alt="Imagem 14">
+        </div>
+        <div class="carousel-slide">
+          <img src="https://i.imgur.com/UkAURxc.png" alt="Imagem 15">
+        </div>
+        <div class="carousel-slide">
+          <img src="https://i.imgur.com/fe5NfaQ.png" alt="Imagem 16">
+        </div>
+        <div class="carousel-slide">
+          <img src="https://i.imgur.com/GW9LSUH.png" alt="Imagem 17">
+        </div>
+        <div class="carousel-slide">
+          <img src="https://i.imgur.com/F10XAEM.png" alt="Imagem 18">
+        </div>
       </div>
-    </div>
+      </div>
 
     <div class="box">
       <h2>Horário dos Participantes</h2>
@@ -109,6 +175,7 @@
   </div>
 
   <script>
+    // --- SCRIPT DO HORÁRIO (SEU SCRIPT ORIGINAL) ---
     const videoHorario = document.getElementById('videoHorario');
     const diasUteis = ["Seg", "Ter", "Qua", "Qui", "Sex"];
 
@@ -120,40 +187,59 @@
       } else {
         videoHorario.src = `videos/HorarioSeg.mp4`; // Exemplo: padrão para segunda
       }
-      videoHorario.load(); // Carrega o novo vídeo, se o src mudou
+      videoHorario.load();
     }
 
     function scheduleMidnightReload() {
       const now = new Date();
-      // Cria um objeto Date para a próxima meia-noite (00:00:00 do dia seguinte)
       const midnight = new Date(
         now.getFullYear(),
         now.getMonth(),
-        now.getDate() + 1, // Adiciona um dia para ir para o dia seguinte
-        0, 0, 0, 0 // Meia-noite (00:00:00.000)
+        now.getDate() + 1,
+        0, 0, 0, 0
       );
-
-      // Calcula o tempo em milissegundos até a próxima meia-noite
       const timeToMidnight = midnight.getTime() - now.getTime();
-
       console.log(`Próxima atualização em: ${timeToMidnight / 1000 / 60} minutos.`);
-
-      // Programa a recarga da página para ocorrer à meia-noite
       setTimeout(() => {
         console.log("Atualizando a página...");
-        window.location.reload(true); // Recarrega a página, forçando o cache (não obrigatório, mas bom para garantir)
+        window.location.reload(true);
       }, timeToMidnight);
     }
 
-    // Inicializa o vídeo de horário quando a página carrega
     updateHorarioVideo();
-
-    // Programa a primeira recarga à meia-noite
     scheduleMidnightReload();
 
-    // Opcional: Se você quer que a atualização dos vídeos de horários ocorra sem recarregar a página,
-    // por exemplo, a cada minuto (menos recomendado para o seu caso de TV, recarregar é mais confiável).
-    // setInterval(updateHorarioVideo, 60 * 1000); // A cada 1 minuto (se precisar de precisão maior para o horário)
+    // --- SCRIPT DO CARROSSEL ---
+    let slideIndex = 1;
+    let slideInterval;
+
+    function showSlides(n) {
+      let i;
+      let slides = document.getElementsByClassName("carousel-slide");
+      if (n > slides.length) {slideIndex = 1}
+      if (n < 1) {slideIndex = slides.length}
+      for (i = 0; i < slides.length; i++) {
+        slides[i].style.display = "none";
+      }
+      slides[slideIndex-1].style.display = "block";
+    }
+
+    function plusSlides(n) {
+      clearInterval(slideInterval);
+      showSlides(slideIndex += n);
+      startSlideShow();
+    }
+
+    function startSlideShow() {
+      slideInterval = setInterval(() => {
+        plusSlides(1);
+      }, 5000); // Muda de imagem a cada 5 segundos
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      showSlides(slideIndex);
+      startSlideShow();
+    });
   </script>
 </body>
 </html>
