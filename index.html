@@ -29,13 +29,13 @@
       flex-direction: column;
       font-size: 14px;
       color: #ffffff;
-      position: relative; /* Adicionado para posicionar as setas do carrossel */
+      position: relative;
     }
     h2 {
       font-size: 16px;
       margin: 0 0 10px;
       color: #ffffff;
-      z-index: 10; /* Garante que o título fique sobre a imagem */
+      z-index: 10;
     }
     iframe {
       width: 100%;
@@ -59,18 +59,16 @@
       object-fit: cover;
     }
 
-    /* --- ESTILOS DO CARROSSEL --- */
     .carousel-container {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
-      height: 100%; /* Já está */
-      min-height: 250px; /* Adicione isso para forçar espaço mínimo */
+      height: 100%;
+      min-height: 250px;
       overflow: hidden;
       border-radius: 10px;
     }
-
     .carousel-slide {
       display: none;
       width: 100%;
@@ -81,11 +79,28 @@
       height: 100%;
       object-fit: cover;
     }
-    /* Setas de navegação - REMOVIDAS */
     .prev, .next {
-      display: none; /* Oculta os botões de navegação */
+      display: none;
     }
 
+    /* Camada das bolinhas */
+    #bouncing-area {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      pointer-events: none;
+    }
+    .bouncing {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid white;
+      object-fit: cover;
+    }
   </style>
 </head>
 <body>
@@ -155,7 +170,7 @@
           <img src="https://i.imgur.com/F10XAEM.png" alt="Imagem 18">
         </div>
       </div>
-      </div>
+    </div>
 
     <div class="box">
       <h2>Horário dos Participantes</h2>
@@ -174,72 +189,109 @@
     </div>
   </div>
 
+  <!-- Camada de bolinhas -->
+  <div id="bouncing-area"></div>
+
   <script>
-    // --- SCRIPT DO HORÁRIO (SEU SCRIPT ORIGINAL) ---
+    // Horário
     const videoHorario = document.getElementById('videoHorario');
     const diasUteis = ["Seg", "Ter", "Qua", "Qui", "Sex"];
 
     function updateHorarioVideo() {
-      const dia = new Date().getDay(); // 0 = dom, ..., 6 = sáb
+      const dia = new Date().getDay();
       if (dia >= 1 && dia <= 5) {
-        const nomeDia = diasUteis[dia - 1]; // 1 = seg -> index 0
+        const nomeDia = diasUteis[dia - 1];
         videoHorario.src = `videos/Horario${nomeDia}.mp4`;
       } else {
-        videoHorario.src = `videos/HorarioSeg.mp4`; // Exemplo: padrão para segunda
+        videoHorario.src = `videos/HorarioSeg.mp4`;
       }
       videoHorario.load();
     }
-
     function scheduleMidnightReload() {
       const now = new Date();
-      const midnight = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1,
-        0, 0, 0, 0
-      );
+      const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
       const timeToMidnight = midnight.getTime() - now.getTime();
-      console.log(`Próxima atualização em: ${timeToMidnight / 1000 / 60} minutos.`);
-      setTimeout(() => {
-        console.log("Atualizando a página...");
-        window.location.reload(true);
-      }, timeToMidnight);
+      setTimeout(() => window.location.reload(true), timeToMidnight);
     }
-
     updateHorarioVideo();
     scheduleMidnightReload();
 
-    // --- SCRIPT DO CARROSSEL ---
+    // Carrossel
     let slideIndex = 1;
     let slideInterval;
-
     function showSlides(n) {
-      let i;
       let slides = document.getElementsByClassName("carousel-slide");
       if (n > slides.length) {slideIndex = 1}
       if (n < 1) {slideIndex = slides.length}
-      for (i = 0; i < slides.length; i++) {
-        slides[i].style.display = "none";
-      }
+      for (let i = 0; i < slides.length; i++) slides[i].style.display = "none";
       slides[slideIndex-1].style.display = "block";
     }
-
     function plusSlides(n) {
       clearInterval(slideInterval);
       showSlides(slideIndex += n);
       startSlideShow();
     }
-
     function startSlideShow() {
-      slideInterval = setInterval(() => {
-        plusSlides(1);
-      }, 5000); // Muda de imagem a cada 5 segundos
+      slideInterval = setInterval(() => plusSlides(1), 5000);
     }
-
     document.addEventListener("DOMContentLoaded", function() {
       showSlides(slideIndex);
       startSlideShow();
     });
+
+    // Bolinhas
+    const fotos = [
+      "https://i.pinimg.com/236x/73/14/cc/7314cc1a88bf3cdc48347ab186e12e81.jpg",
+      "https://i.pinimg.com/236x/73/14/cc/7314cc1a88bf3cdc48347ab186e12e81.jpg",
+      "https://i.pinimg.com/236x/73/14/cc/7314cc1a88bf3cdc48347ab186e12e81.jpg",
+      "https://i.pinimg.com/236x/73/14/cc/7314cc1a88bf3cdc48347ab186e12e81.jpg",
+      "https://i.pinimg.com/236x/73/14/cc/7314cc1a88bf3cdc48347ab186e12e81.jpg",
+      "https://i.pinimg.com/236x/73/14/cc/7314cc1a88bf3cdc48347ab186e12e81.jpg"
+    ];
+    let bolinhas = [];
+    function criarBolinha(fotoURL) {
+      const img = document.createElement("img");
+      img.src = fotoURL;
+      img.classList.add("bouncing");
+      document.getElementById("bouncing-area").appendChild(img);
+      bolinhas.push({
+        el: img,
+        x: Math.random() * (window.innerWidth - 80),
+        y: Math.random() * (window.innerHeight - 80),
+        dx: (Math.random() < 0.5 ? -1 : 1) * 2,
+        dy: (Math.random() < 0.5 ? -1 : 1) * 2
+      });
+    }
+    function moverBolinhas() {
+      for (let i = 0; i < bolinhas.length; i++) {
+        let b = bolinhas[i];
+        b.x += b.dx;
+        b.y += b.dy;
+        if (b.x <= 0 || b.x >= window.innerWidth - 80) b.dx *= -1;
+        if (b.y <= 0 || b.y >= window.innerHeight - 80) b.dy *= -1;
+        for (let j = i + 1; j < bolinhas.length; j++) {
+          let b2 = bolinhas[j];
+          let dx = b2.x - b.x;
+          let dy = b2.y - b.y;
+          let dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 80) {
+            let tempDx = b.dx, tempDy = b.dy;
+            b.dx = b2.dx; b.dy = b2.dy;
+            b2.dx = tempDx; b2.dy = tempDy;
+            let overlap = 80 - dist;
+            let pushX = (dx / dist) * (overlap / 2);
+            let pushY = (dy / dist) * (overlap / 2);
+            b.x -= pushX; b.y -= pushY;
+            b2.x += pushX; b2.y += pushY;
+          }
+        }
+        b.el.style.left = b.x + "px";
+        b.el.style.top = b.y + "px";
+      }
+      requestAnimationFrame(moverBolinhas);
+    }
+    fotos.forEach(f => criarBolinha(f));
+    moverBolinhas();
   </script>
 </body>
 </html>
