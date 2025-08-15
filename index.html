@@ -189,7 +189,6 @@
     </div>
   </div>
 
-  <!-- Camada de bolinhas -->
   <div id="bouncing-area"></div>
 
   <script>
@@ -262,34 +261,66 @@
         dy: (Math.random() < 0.5 ? -1 : 1) * 2
       });
     }
+
+    // AQUI ESTÁ A FUNÇÃO CORRIGIDA
     function moverBolinhas() {
+      const ballSize = 80; // Tamanho da bolinha
+      const areaWidth = window.innerWidth;
+      const areaHeight = window.innerHeight;
+
       for (let i = 0; i < bolinhas.length; i++) {
-        let b = bolinhas[i];
-        b.x += b.dx;
-        b.y += b.dy;
-        if (b.x <= 0 || b.x >= window.innerWidth - 80) b.dx *= -1;
-        if (b.y <= 0 || b.y >= window.innerHeight - 80) b.dy *= -1;
-        for (let j = i + 1; j < bolinhas.length; j++) {
-          let b2 = bolinhas[j];
-          let dx = b2.x - b.x;
-          let dy = b2.y - b.y;
-          let dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 80) {
-            let tempDx = b.dx, tempDy = b.dy;
-            b.dx = b2.dx; b.dy = b2.dy;
-            b2.dx = tempDx; b2.dy = tempDy;
-            let overlap = 80 - dist;
-            let pushX = (dx / dist) * (overlap / 2);
-            let pushY = (dy / dist) * (overlap / 2);
-            b.x -= pushX; b.y -= pushY;
-            b2.x += pushX; b2.y += pushY;
+          let b = bolinhas[i];
+          b.x += b.dx;
+          b.y += b.dy;
+
+          // Correção da colisão com as paredes
+          // Parede esquerda
+          if (b.x < 0) {
+              b.x = 0; // Reposiciona na borda
+              b.dx *= -1;
+          } 
+          // Parede direita
+          else if (b.x > areaWidth - ballSize) {
+              b.x = areaWidth - ballSize; // Reposiciona na borda
+              b.dx *= -1;
           }
-        }
-        b.el.style.left = b.x + "px";
-        b.el.style.top = b.y + "px";
+
+          // Parede de cima
+          if (b.y < 0) {
+              b.y = 0; // Reposiciona na borda
+              b.dy *= -1;
+          } 
+          // Parede de baixo
+          else if (b.y > areaHeight - ballSize) {
+              b.y = areaHeight - ballSize; // Reposiciona na borda
+              b.dy *= -1;
+          }
+
+          // Colisão entre as bolinhas
+          for (let j = i + 1; j < bolinhas.length; j++) {
+              let b2 = bolinhas[j];
+              let dx = b2.x - b.x;
+              let dy = b2.y - b.y;
+              let dist = Math.sqrt(dx * dx + dy * dy);
+              if (dist < ballSize) {
+                  let tempDx = b.dx, tempDy = b.dy;
+                  b.dx = b2.dx; b.dy = b2.dy;
+                  b2.dx = tempDx; b2.dy = tempDy;
+                  
+                  let overlap = ballSize - dist;
+                  let pushX = (dx / dist) * (overlap / 2);
+                  let pushY = (dy / dist) * (overlap / 2);
+                  b.x -= pushX; b.y -= pushY;
+                  b2.x += pushX; b2.y += pushY;
+              }
+          }
+
+          b.el.style.left = b.x + "px";
+          b.el.style.top = b.y + "px";
       }
       requestAnimationFrame(moverBolinhas);
     }
+
     fotos.forEach(f => criarBolinha(f));
     moverBolinhas();
   </script>
