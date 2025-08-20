@@ -38,8 +38,10 @@
       z-index: 10;
     }
     iframe {
-      width: 100%;
-      border: none;
+      transform: scale(1.2);
+  transform-origin: top left;
+  width: 120%;
+  height: 120%;
     }
     ul {
       padding-left: 16px;
@@ -53,12 +55,6 @@
     .rss-box iframe {
       height: 100%;
     }
-    video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
     .carousel-container {
       position: absolute;
       top: 0;
@@ -82,29 +78,11 @@
     .prev, .next {
       display: none;
     }
-
-    /* Camada das bolinhas */
-    #bouncing-area {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 9999;
-      pointer-events: none;
-    }
-    .bouncing {
-      position: absolute;
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      border: 3px solid white;
-      object-fit: cover;
-    }
   </style>
 </head>
 <body>
   <div class="grid">
+    <!-- Grid 1 -->
     <div class="box">
       <h2>Notícias de Astronomia</h2>
       <div class="rss-box">
@@ -112,6 +90,7 @@
       </div>
     </div>
 
+    <!-- Grid 2 -->
     <div class="box">
       <h2>Imagens do Projeto</h2>
       <div class="carousel-container" style="display: block;">
@@ -172,11 +151,15 @@
       </div>
     </div>
 
+    <!-- Grid 3 (Planilha) -->
     <div class="box">
       <h2>Horário dos Participantes</h2>
-      <video id="videoHorario" autoplay muted loop playsinline></video>
+      <iframe 
+        src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRoSSJ1EHC89tcAYNmvz6VwBO9_ZWTt_ms_YOXoncuny-ILcZ6z74mEIXnAxqN6JFcCLxY5vJu7s-hI/pubhtml?gid=1572658111&single=true&widget=true&headers=false">
+      </iframe>
     </div>
 
+    <!-- Grid 4 -->
     <div class="box">
       <h2>Tarefas do Laboratório</h2>
       <ul>
@@ -189,32 +172,7 @@
     </div>
   </div>
 
-  <div id="bouncing-area"></div>
-
   <script>
-    // Horário
-    const videoHorario = document.getElementById('videoHorario');
-    const diasUteis = ["Seg", "Ter", "Qua", "Qui", "Sex"];
-
-    function updateHorarioVideo() {
-      const dia = new Date().getDay();
-      if (dia >= 1 && dia <= 5) {
-        const nomeDia = diasUteis[dia - 1];
-        videoHorario.src = `videos/Horario${nomeDia}.mp4`;
-      } else {
-        videoHorario.src = `videos/HorarioSeg.mp4`;
-      }
-      videoHorario.load();
-    }
-    function scheduleMidnightReload() {
-      const now = new Date();
-      const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
-      const timeToMidnight = midnight.getTime() - now.getTime();
-      setTimeout(() => window.location.reload(true), timeToMidnight);
-    }
-    updateHorarioVideo();
-    scheduleMidnightReload();
-
     // Carrossel
     let slideIndex = 1;
     let slideInterval;
@@ -237,92 +195,6 @@
       showSlides(slideIndex);
       startSlideShow();
     });
-
-    // Bolinhas
-    const fotos = [
-      "https://i.pinimg.com/236x/73/14/cc/7314cc1a88bf3cdc48347ab186e12e81.jpg",
-      "https://i.pinimg.com/236x/73/14/cc/7314cc1a88bf3cdc48347ab186e12e81.jpg",
-      "https://i.pinimg.com/236x/73/14/cc/7314cc1a88bf3cdc48347ab186e12e81.jpg",
-      "https://i.pinimg.com/236x/73/14/cc/7314cc1a88bf3cdc48347ab186e12e81.jpg",
-      "https://i.pinimg.com/236x/73/14/cc/7314cc1a88bf3cdc48347ab186e12e81.jpg",
-      "https://i.pinimg.com/236x/73/14/cc/7314cc1a88bf3cdc48347ab186e12e81.jpg"
-    ];
-    let bolinhas = [];
-    function criarBolinha(fotoURL) {
-      const img = document.createElement("img");
-      img.src = fotoURL;
-      img.classList.add("bouncing");
-      document.getElementById("bouncing-area").appendChild(img);
-      bolinhas.push({
-        el: img,
-        x: Math.random() * (window.innerWidth - 80),
-        y: Math.random() * (window.innerHeight - 80),
-        dx: (Math.random() < 0.5 ? -1 : 1) * 2,
-        dy: (Math.random() < 0.5 ? -1 : 1) * 2
-      });
-    }
-
-    // AQUI ESTÁ A FUNÇÃO CORRIGIDA
-    function moverBolinhas() {
-      const ballSize = 80; // Tamanho da bolinha
-      const areaWidth = window.innerWidth;
-      const areaHeight = window.innerHeight;
-
-      for (let i = 0; i < bolinhas.length; i++) {
-          let b = bolinhas[i];
-          b.x += b.dx;
-          b.y += b.dy;
-
-          // Correção da colisão com as paredes
-          // Parede esquerda
-          if (b.x < 0) {
-              b.x = 0; // Reposiciona na borda
-              b.dx *= -1;
-          } 
-          // Parede direita
-          else if (b.x > areaWidth - ballSize) {
-              b.x = areaWidth - ballSize; // Reposiciona na borda
-              b.dx *= -1;
-          }
-
-          // Parede de cima
-          if (b.y < 0) {
-              b.y = 0; // Reposiciona na borda
-              b.dy *= -1;
-          } 
-          // Parede de baixo
-          else if (b.y > areaHeight - ballSize) {
-              b.y = areaHeight - ballSize; // Reposiciona na borda
-              b.dy *= -1;
-          }
-
-          // Colisão entre as bolinhas
-          for (let j = i + 1; j < bolinhas.length; j++) {
-              let b2 = bolinhas[j];
-              let dx = b2.x - b.x;
-              let dy = b2.y - b.y;
-              let dist = Math.sqrt(dx * dx + dy * dy);
-              if (dist < ballSize) {
-                  let tempDx = b.dx, tempDy = b.dy;
-                  b.dx = b2.dx; b.dy = b2.dy;
-                  b2.dx = tempDx; b2.dy = tempDy;
-                  
-                  let overlap = ballSize - dist;
-                  let pushX = (dx / dist) * (overlap / 2);
-                  let pushY = (dy / dist) * (overlap / 2);
-                  b.x -= pushX; b.y -= pushY;
-                  b2.x += pushX; b2.y += pushY;
-              }
-          }
-
-          b.el.style.left = b.x + "px";
-          b.el.style.top = b.y + "px";
-      }
-      requestAnimationFrame(moverBolinhas);
-    }
-
-    fotos.forEach(f => criarBolinha(f));
-    moverBolinhas();
   </script>
 </body>
 </html>
