@@ -62,7 +62,7 @@
       z-index: 10;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
       padding: 10px 20px;
       border-bottom: 1px solid var(--border);
       background: rgba(8, 12, 20, 0.85);
@@ -70,10 +70,9 @@
     }
 
     .header-logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+  position: absolute;
+  left: 20px;
+}
 
     .logo-dot {
       width: 10px; height: 10px;
@@ -109,6 +108,8 @@
     }
 
     .header-status {
+      position: absolute;
+      right: 20px;
       display: flex;
       align-items: center;
       gap: 6px;
