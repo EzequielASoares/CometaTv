@@ -4,173 +4,569 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Painel do Laboratório</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
-    body {
-      margin: 0;
-      background-color: #f2f2f2;
-      font-family: 'Segoe UI', sans-serif;
-      color: #004775;
+    :root {
+      --bg: #020d18;
+      --panel: #041524;
+      --panel2: #031020;
+      --border: rgba(0, 71, 117, 0.5);
+      --accent: #004775;
+      --accent-bright: #0069aa;
+      --accent2: #fdc641;
+      --accent3: #fdc641;
+      --text: #cce0ee;
+      --text-dim: #4a7a99;
+      --title: #ffffff;
+      --glow: 0 0 18px rgba(0,71,117,0.45);
+      --glow2: 0 0 30px rgba(0,71,117,0.20);
+      --glow-gold: 0 0 18px rgba(253,198,65,0.25);
     }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(ellipse at 15% 20%, rgba(0,71,117,0.35) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 80%, rgba(253,198,65,0.08) 0%, transparent 55%);
+      font-family: 'Syne', sans-serif;
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Estrelas de fundo */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 25% 40%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 40% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 55% 60%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 70% 25%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 85% 70%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 92% 45%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 5%  80%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 60% 85%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 33% 72%, rgba(255,255,255,0.4) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* HEADER */
+    header {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(8, 12, 20, 0.85);
+      backdrop-filter: blur(6px);
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--accent2);
+      box-shadow: 0 0 10px var(--accent2), 0 0 20px var(--accent2);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .header-title {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--title);
+    }
+
+    .header-title span {
+      color: var(--accent2);
+    }
+
+    .header-clock {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      color: var(--accent2);
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 8px rgba(253,198,65,0.5);
+    }
+
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent2);
+      box-shadow: 0 0 6px var(--accent2);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    /* GRID */
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr 1fr;
-      gap: 5px;
-      height: 100vh;
-      padding: 5px;
-      box-sizing: border-box;
-    }
-    .box {
-      border-radius: 10px;
-      background-color: #3d3d3d;
+      gap: 10px;
+      height: calc(100vh - 50px);
       padding: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .box {
+      border-radius: 12px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 0;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      font-size: 14px;
-      color: #ffffff;
       position: relative;
+      box-shadow: var(--glow2), inset 0 1px 0 rgba(255,255,255,0.05);
+      transition: border-color 0.3s;
     }
+
+    .box:hover {
+      border-color: rgba(0,180,255,0.35);
+      box-shadow: var(--glow), inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+
+    /* Linha de acento no topo de cada box */
+    .box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-bright), transparent);
+      opacity: 0.7;
+    }
+    .box:nth-child(2)::before { background: linear-gradient(90deg, transparent, var(--accent2), transparent); }
+    .box:nth-child(3)::before { background: linear-gradient(90deg, transparent, var(--accent-bright), transparent); }
+    .box:nth-child(4)::before { background: linear-gradient(90deg, transparent, var(--accent2), transparent); }
+
+    /* PANEL HEADER */
+    .panel-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0,0,0,0.2);
+      flex-shrink: 0;
+    }
+
+    .panel-icon {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
     h2 {
-      font-size: 16px;
-      margin: 0 0 10px;
-      color: #ffffff;
-      z-index: 10;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      flex: 1;
     }
+
+    .panel-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      color: var(--accent2);
+      letter-spacing: 0.1em;
+      background: rgba(253,198,65,0.08);
+      border: 1px solid rgba(253,198,65,0.25);
+      padding: 2px 7px;
+      border-radius: 20px;
+    }
+    .box:nth-child(2) .panel-tag { color: var(--accent2); background: rgba(253,198,65,0.08); border-color: rgba(253,198,65,0.25); }
+    .box:nth-child(3) .panel-tag { color: #5bb8ff; background: rgba(0,71,117,0.25); border-color: rgba(0,105,170,0.4); }
+    .box:nth-child(4) .panel-tag { color: var(--accent2); background: rgba(253,198,65,0.08); border-color: rgba(253,198,65,0.25); }
+
+    .panel-content {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
     iframe {
       width: 100%;
       height: 100%;
       border: none;
-    }
-    ul {
-      padding-left: 16px;
-      margin: 0;
-      font-size: 28px;
-    }
-    .rss-box {
-      overflow-y: auto;
       flex: 1;
     }
-    .rss-box iframe {
-      height: 100%;
-    }
+
+    /* CARROSSEL */
     .carousel-container {
-      position: absolute;
-      top: 0;
-      left: 0;
+      position: relative;
       width: 100%;
       height: 100%;
-      min-height: 250px;
       overflow: hidden;
-      border-radius: 10px;
     }
+
     .carousel-slide {
       display: none;
       width: 100%;
       height: 100%;
+      position: absolute;
+      inset: 0;
+      animation: fadeIn 0.6s ease;
     }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(1.02); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
     .carousel-slide img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
-    .prev, .next {
-      display: none;
+
+    /* Overlay sutil nas imagens */
+    .carousel-slide::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 60%, rgba(8,12,20,0.6) 100%);
+    }
+
+    /* Indicadores do carrossel */
+    .carousel-dots {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 5px;
+      z-index: 10;
+    }
+
+    .dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .dot.active {
+      background: var(--accent2);
+      box-shadow: 0 0 6px var(--accent2);
+      width: 14px;
+      border-radius: 3px;
+    }
+
+    /* CONTADOR */
+    .carousel-counter {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: rgba(255,255,255,0.6);
+      z-index: 10;
+      background: rgba(0,0,0,0.4);
+      padding: 3px 8px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(4px);
+    }
+
+    /* TAREFAS */
+    .tasks-content {
+      padding: 12px 14px;
+      overflow-y: auto;
+      flex: 1;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .task-group {
+      margin-bottom: 18px;
+    }
+
+    .task-group-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(253,198,65,0.2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .task-group-title::before {
+      content: '';
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent2);
+      box-shadow: 0 0 8px var(--accent2);
+      flex-shrink: 0;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .task-item:last-child { border-bottom: none; }
+
+    .task-bullet {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,105,170,0.7);
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
+
+    .task-text {
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    .task-date {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      color: var(--text-dim);
+      white-space: nowrap;
+      margin-top: 2px;
+      background: rgba(255,255,255,0.04);
+      padding: 2px 6px;
+      border-radius: 4px;
     }
   </style>
 </head>
 <body>
+
+  <header>
+    <div class="header-logo">
+      <div class="logo-dot"></div>
+      <div class="header-title">Painel do <span>Laboratório</span></div>
+    </div>
+    <div class="header-clock" id="clock">--:--:--</div>
+    <div class="header-status">
+      <div class="status-dot"></div>
+      Ao vivo
+    </div>
+  </header>
+
   <div class="grid">
-    <!-- Grid 1 -->
+
+    <!-- Grid 1: Notícias -->
     <div class="box">
-      <h2>Notícias de Astronomia</h2>
-      <div class="rss-box">
+      <div class="panel-header">
+        <span class="panel-icon">🛰️</span>
+        <h2>Notícias de Astronomia</h2>
+        <span class="panel-tag">LIVE</span>
+      </div>
+      <div class="panel-content">
         <iframe src="https://www.universetoday.com/" title="Universe Today"></iframe>
       </div>
     </div>
 
-    <!-- Grid 2 -->
+    <!-- Grid 2: Imagens -->
     <div class="box">
-      <h2>Imagens do Projeto</h2>
-      <div class="carousel-container" style="display: block;">
-        <div class="carousel-slide"><img src="https://i.imgur.com/H1VDjrL.png" alt="Imagem 1"></div>
-        <div class="carousel-slide"><img src="https://i.imgur.com/OtYwGT8.png" alt="Imagem 2"></div>
-        <div class="carousel-slide"><img src="https://i.imgur.com/0IKJEv1.png" alt="Imagem 3"></div>
-        <div class="carousel-slide"><img src="https://i.imgur.com/jlA2uvU.png" alt="Imagem 4"></div>
-        <div class="carousel-slide"><img src="https://i.imgur.com/jsACFuk.png" alt="Imagem 5"></div>
-        <div class="carousel-slide"><img src="https://i.imgur.com/ZpjOTrs.png" alt="Imagem 6"></div>
-        <div class="carousel-slide"><img src="https://i.imgur.com/wr50ViL.png" alt="Imagem 7"></div>
-        <div class="carousel-slide"><img src="https://i.imgur.com/xuUpGzP.png" alt="Imagem 8"></div>
-        <div class="carousel-slide"><img src="https://i.imgur.com/FfRmpSy.png" alt="Imagem 9"></div>
-        <div class="carousel-slide"><img src="https://i.imgur.com/xgYNzTI.png" alt="Imagem 10"></div>
-        <div class="carousel-slide"><img src="https://i.imgur.com/dvln20A.png" alt="Imagem 11"></div>
-        <div class="carousel-slide"><img src="https://i.imgur.com/QlUrRPJ.png" alt="Imagem 12"></div>
-        <div class="carousel-slide"><img src="https://i.imgur.com/JobkDQR.png" alt="Imagem 13"></div>
-        <div class="carousel-slide"><img src="https://i.imgur.com/W3llLqs.png" alt="Imagem 14"></div>
-        <div class="carousel-slide"><img src="https://i.imgur.com/UkAURxc.png" alt="Imagem 15"></div>
-        <div class="carousel-slide"><img src="https://i.imgur.com/fe5NfaQ.png" alt="Imagem 16"></div>
-        <div class="carousel-slide"><img src="https://i.imgur.com/GW9LSUH.png" alt="Imagem 17"></div>
-        <div class="carousel-slide"><img src="https://i.imgur.com/F10XAEM.png" alt="Imagem 18"></div>
+      <div class="panel-header">
+        <span class="panel-icon">🔭</span>
+        <h2>Imagens do Projeto</h2>
+        <span class="panel-tag">GALERIA</span>
+      </div>
+      <div class="panel-content">
+        <div class="carousel-container">
+          <div class="carousel-slide"><img src="https://i.imgur.com/H1VDjrL.png" alt="Imagem 1"></div>
+          <div class="carousel-slide"><img src="https://i.imgur.com/OtYwGT8.png" alt="Imagem 2"></div>
+          <div class="carousel-slide"><img src="https://i.imgur.com/0IKJEv1.png" alt="Imagem 3"></div>
+          <div class="carousel-slide"><img src="https://i.imgur.com/jlA2uvU.png" alt="Imagem 4"></div>
+          <div class="carousel-slide"><img src="https://i.imgur.com/jsACFuk.png" alt="Imagem 5"></div>
+          <div class="carousel-slide"><img src="https://i.imgur.com/ZpjOTrs.png" alt="Imagem 6"></div>
+          <div class="carousel-slide"><img src="https://i.imgur.com/wr50ViL.png" alt="Imagem 7"></div>
+          <div class="carousel-slide"><img src="https://i.imgur.com/xuUpGzP.png" alt="Imagem 8"></div>
+          <div class="carousel-slide"><img src="https://i.imgur.com/FfRmpSy.png" alt="Imagem 9"></div>
+          <div class="carousel-slide"><img src="https://i.imgur.com/xgYNzTI.png" alt="Imagem 10"></div>
+          <div class="carousel-slide"><img src="https://i.imgur.com/dvln20A.png" alt="Imagem 11"></div>
+          <div class="carousel-slide"><img src="https://i.imgur.com/QlUrRPJ.png" alt="Imagem 12"></div>
+          <div class="carousel-slide"><img src="https://i.imgur.com/JobkDQR.png" alt="Imagem 13"></div>
+          <div class="carousel-slide"><img src="https://i.imgur.com/W3llLqs.png" alt="Imagem 14"></div>
+          <div class="carousel-slide"><img src="https://i.imgur.com/UkAURxc.png" alt="Imagem 15"></div>
+          <div class="carousel-slide"><img src="https://i.imgur.com/fe5NfaQ.png" alt="Imagem 16"></div>
+          <div class="carousel-slide"><img src="https://i.imgur.com/GW9LSUH.png" alt="Imagem 17"></div>
+          <div class="carousel-slide"><img src="https://i.imgur.com/F10XAEM.png" alt="Imagem 18"></div>
+
+          <div class="carousel-counter" id="counter">1 / 18</div>
+          <div class="carousel-dots" id="dots"></div>
+        </div>
       </div>
     </div>
 
-    <!-- Grid 3 (Planilha em tempo real) -->
+    <!-- Grid 3: Planilha -->
     <div class="box">
-      <h2>Horário dos Participantes</h2>
-      <iframe 
-        src="https://docs.google.com/spreadsheets/d/1ZCQsp6V9Qxsg6hts_4ByC1K-O_sETzqHuRLtV4Ih74M/edit?usp=sharing">
-      </iframe>
+      <div class="panel-header">
+        <span class="panel-icon">📅</span>
+        <h2>Horário dos Participantes</h2>
+        <span class="panel-tag">SHEETS</span>
+      </div>
+      <div class="panel-content">
+        <iframe src="https://docs.google.com/spreadsheets/d/1ZCQsp6V9Qxsg6hts_4ByC1K-O_sETzqHuRLtV4Ih74M/edit?usp=sharing"></iframe>
+      </div>
     </div>
 
-    <!-- Grid 4 -->
+    <!-- Grid 4: Tarefas -->
     <div class="box">
-      <h2>Tarefas do Laboratório</h2>
-      <ul>
-        <li>
-    XLVIV REUNIÃO ANUAL DA SOCIEDADE ASTRONÔMICA BRASILEIRA 
-    
-    <ul style="margin-left:20px; list-style-type:circle;">
-      <li>PRÉVIA RESUMO SAB 17/04</li>
-      <li>DATA FINAL SAB RESUMOS 24/04</li>
-      <li>Pedido de auxílio — 02/02/2026 → 24/04/2026</li>
-      <li>Confirmação de participação no evento — 01/06/2026 → 10/09/2026</li>
-    </ul>
+      <div class="panel-header">
+        <span class="panel-icon">📋</span>
+        <h2>Tarefas do Laboratório</h2>
+        <span class="panel-tag">2026</span>
+      </div>
+      <div class="panel-content">
+        <div class="tasks-content">
 
-  </li>
-        <li>CICT - CONGRESSO DE INICIAÇÃO CIENTÍFICA E TECNOLOGICA
-        <ul style="margin-left:20px; list-style-type:circle;">
-      <li>PRÉVIA RELATÓRIO 30/06</li>
-          <li>PRÉVIA FINAL RELATÓRIO/VÍDEO 31/07</li>
-      <li>SUBMISSÕES DE TRABALHO ../08/2026</li>
-    </ul>
-        
-        </li>
-        
-      </ul>
+          <div class="task-group">
+            <div class="task-group-title">XLVIV SAB — Sociedade Astronômica Brasileira</div>
+            <div class="task-item">
+              <div class="task-bullet"></div>
+              <div>
+                <div class="task-text">Prévia do Resumo SAB</div>
+                <div class="task-date">17 / 04</div>
+              </div>
+            </div>
+            <div class="task-item">
+              <div class="task-bullet"></div>
+              <div>
+                <div class="task-text">Data final dos Resumos SAB</div>
+                <div class="task-date">24 / 04</div>
+              </div>
+            </div>
+            <div class="task-item">
+              <div class="task-bullet"></div>
+              <div>
+                <div class="task-text">Pedido de auxílio</div>
+                <div class="task-date">02/02 → 24/04/2026</div>
+              </div>
+            </div>
+            <div class="task-item">
+              <div class="task-bullet"></div>
+              <div>
+                <div class="task-text">Confirmação de participação no evento</div>
+                <div class="task-date">01/06 → 10/09/2026</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-group">
+            <div class="task-group-title">CICT — Congresso de Iniciação Científica</div>
+            <div class="task-item">
+              <div class="task-bullet"></div>
+              <div>
+                <div class="task-text">Prévia do Relatório</div>
+                <div class="task-date">30 / 06</div>
+              </div>
+            </div>
+            <div class="task-item">
+              <div class="task-bullet"></div>
+              <div>
+                <div class="task-text">Prévia Final do Relatório / Vídeo</div>
+                <div class="task-date">31 / 07</div>
+              </div>
+            </div>
+            <div class="task-item">
+              <div class="task-bullet"></div>
+              <div>
+                <div class="task-text">Submissões de Trabalho</div>
+                <div class="task-date">../08/2026</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
+
   </div>
 
   <script>
+    // Relógio
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
     // Carrossel
-    let slideIndex = 1;
+    let slideIndex = 0;
     let slideInterval;
-    function showSlides(n) {
-      let slides = document.getElementsByClassName("carousel-slide");
-      if (n > slides.length) {slideIndex = 1}
-      if (n < 1) {slideIndex = slides.length}
-      for (let i = 0; i < slides.length; i++) slides[i].style.display = "none";
-      slides[slideIndex-1].style.display = "block";
+    const slides = document.getElementsByClassName("carousel-slide");
+    const total = slides.length;
+    const dotsContainer = document.getElementById('dots');
+    const counter = document.getElementById('counter');
+
+    // Criar dots
+    for (let i = 0; i < total; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'dot';
+      dot.addEventListener('click', () => { clearInterval(slideInterval); goTo(i); startSlideShow(); });
+      dotsContainer.appendChild(dot);
     }
-    function plusSlides(n) {
-      clearInterval(slideInterval);
-      showSlides(slideIndex += n);
-      startSlideShow();
+
+    function goTo(n) {
+      slideIndex = (n + total) % total;
+      for (let i = 0; i < total; i++) {
+        slides[i].style.display = 'none';
+      }
+      slides[slideIndex].style.display = 'block';
+      counter.textContent = `${slideIndex + 1} / ${total}`;
+      const dots = dotsContainer.getElementsByClassName('dot');
+      for (let i = 0; i < dots.length; i++) dots[i].classList.remove('active');
+      dots[slideIndex].classList.add('active');
     }
+
     function startSlideShow() {
-      slideInterval = setInterval(() => plusSlides(1), 5000);
+      slideInterval = setInterval(() => goTo(slideIndex + 1), 5000);
     }
-    document.addEventListener("DOMContentLoaded", function() {
-      showSlides(slideIndex);
+
+    document.addEventListener("DOMContentLoaded", function () {
+      goTo(0);
       startSlideShow();
     });
   </script>
